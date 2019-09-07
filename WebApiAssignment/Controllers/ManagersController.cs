@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAssignment.Models;
@@ -25,31 +24,35 @@ namespace WebApiAssignment.Controllers
         {
             _context = context;
 
-            _context.Managers.RemoveRange(_context.Managers);
-            _context.SaveChanges();
-
-            var vighnesh = _context.Employees.Where(e => e.Name == "Vighnesh").First().Id;
-            var omkar = _context.Employees.Where(e => e.Name == "Omkar").First().Id;
-            var bhanu = _context.Employees.Where(e => e.Name == "Bhanu").First().Id;
-            var shubham = _context.Employees.Where(e => e.Name == "Shubham").First().Id;
-
-            _context.Managers.Add(new Managers
+            if (Startup.ResetManagerDatabase == true)
             {
-                EmployeeId = shubham,
-                ManagerId = omkar
-            });
-            _context.Managers.Add(new Managers
-            {
-                EmployeeId = bhanu,
-                ManagerId = omkar
-            });
-            _context.Managers.Add(new Managers
-            {
-                EmployeeId = omkar,
-                ManagerId = vighnesh
-            });
+                Startup.ResetManagerDatabase = false;
+                _context.Managers.RemoveRange(_context.Managers);
+                _context.SaveChanges();
 
-            _context.SaveChanges();
+                var vighnesh = _context.Employees.Where(e => e.Name == "Vighnesh").First().Id;
+                var omkar = _context.Employees.Where(e => e.Name == "Omkar").First().Id;
+                var bhanu = _context.Employees.Where(e => e.Name == "Bhanu").First().Id;
+                var shubham = _context.Employees.Where(e => e.Name == "Shubham").First().Id;
+
+                _context.Managers.Add(new Managers
+                {
+                    EmployeeId = shubham,
+                    ManagerId = omkar
+                });
+                _context.Managers.Add(new Managers
+                {
+                    EmployeeId = bhanu,
+                    ManagerId = omkar
+                });
+                _context.Managers.Add(new Managers
+                {
+                    EmployeeId = omkar,
+                    ManagerId = vighnesh
+                });
+
+                _context.SaveChanges();
+            }
         }
 
         [HttpGet]
@@ -60,7 +63,15 @@ namespace WebApiAssignment.Controllers
             return (await _context.Employees.ToListAsync())
                     .Where(e => managerIds.Contains(e.Id))
                     .ToList();
-            //return (await _context.Managers.ToListAsync());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddManager([FromBody] Managers manager)
+        {
+            await _context.Managers.AddAsync(manager);
+            await _context.SaveChangesAsync();
+
+            return Created("New manager added to DataBase", manager);
         }
 
         [HttpGet("{id}")]
@@ -74,6 +85,20 @@ namespace WebApiAssignment.Controllers
             }
 
             return await _context.Employees.FindAsync(id);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Employee>> DeleteManager(int id)
+        {
+            var manager = await _context.Employees.FindAsync(id);
+
+            if (manager is null)
+                return BadRequest();
+
+            _context.Employees.Remove(manager);
+            await _context.SaveChangesAsync();
+
+            return Ok("Manager removed sucessfully!");
         }
 
         [HttpGet("{id}/employees")]

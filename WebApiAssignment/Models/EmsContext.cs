@@ -8,8 +8,8 @@ namespace WebApiAssignment.Models
 {
     public class EmsContext : DbContext
     {
-        public DbSet<Managers> Managers { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Managers> Managers { get; set; }
 
         public EmsContext(DbContextOptions<EmsContext> options)
             : base(options)

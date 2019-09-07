@@ -10,6 +10,9 @@ namespace WebApiAssignment
 {
     public class Startup
     {
+        public static bool ResetManagerDatabase = true;
+        public static bool ResetEmployeeDatabase = true;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

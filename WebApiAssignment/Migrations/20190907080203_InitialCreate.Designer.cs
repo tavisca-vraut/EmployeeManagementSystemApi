@@ -8,7 +8,7 @@ using WebApiAssignment.Models;
 namespace WebApiAssignment.Migrations
 {
     [DbContext(typeof(EmsContext))]
-    [Migration("20190906113008_InitialCreate")]
+    [Migration("20190907080203_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
