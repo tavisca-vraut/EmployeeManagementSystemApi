@@ -21,47 +21,46 @@ namespace WebApiAssignment.Controllers
                             .Select(m => m.ManagerId)
                             .Distinct();
         }
-
         public ManagersController(EmsContext context)
         {
             _context = context;
 
-            if (_context.Managers.Count() == 0)
-            {
-                _context.Managers.Add(new Managers
-                {
-                    EmployeeId = 4,
-                    ManagerId = 1
-                });
-                _context.Managers.Add(new Managers
-                {
-                    EmployeeId = 3,
-                    ManagerId = 2
-                });
-                _context.Managers.Add(new Managers
-                {
-                    EmployeeId = 2,
-                    ManagerId = 2
-                });
-                _context.Managers.Add(new Managers
-                {
-                    EmployeeId = 1,
-                    ManagerId = 1
-                });
+            _context.Managers.RemoveRange(_context.Managers);
+            _context.SaveChanges();
 
-                _context.SaveChanges();
-            }
+            var vighnesh = _context.Employees.Where(e => e.Name == "Vighnesh").First().Id;
+            var omkar = _context.Employees.Where(e => e.Name == "Omkar").First().Id;
+            var bhanu = _context.Employees.Where(e => e.Name == "Bhanu").First().Id;
+            var shubham = _context.Employees.Where(e => e.Name == "Shubham").First().Id;
+
+            _context.Managers.Add(new Managers
+            {
+                EmployeeId = shubham,
+                ManagerId = omkar
+            });
+            _context.Managers.Add(new Managers
+            {
+                EmployeeId = bhanu,
+                ManagerId = omkar
+            });
+            _context.Managers.Add(new Managers
+            {
+                EmployeeId = omkar,
+                ManagerId = vighnesh
+            });
+
+            _context.SaveChanges();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Managers>>> GetManagers()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetManagers()
         {
             var managerIds = await GetManagerIds();
 
-            //return (await _context.Employees.ToListAsync())
-            //        .Where(e => managerIds.Contains(e.Id))
-            //        .ToList();
-            return (await _context.Managers.ToListAsync());
+            return (await _context.Employees.ToListAsync())
+                    .Where(e => managerIds.Contains(e.Id))
+                    .ToList();
+            //return (await _context.Managers.ToListAsync());
         }
 
         [HttpGet("{id}")]

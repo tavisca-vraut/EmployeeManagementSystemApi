@@ -19,34 +19,37 @@ namespace WebApiAssignment.Controllers
         {
             _context = context;
 
-            if (_context.Employees.Count() == 0)
+            _context.Employees.RemoveRange(_context.Employees);
+            _context.SaveChanges();
+
+            _context.Database.ExecuteSqlCommand("UPDATE sqlite_sequence SET seq = 1 WHERE name = 'employee';");
+            _context.SaveChanges();
+
+            _context.Employees.Add(new Employee
             {
-                _context.Employees.Add(new Employee
-                {
-                    Name = "Vighnesh",
-                    Age = 21,
-                    Salary = 10000000
-                });
-                _context.Employees.Add(new Employee
-                {
-                    Name = "Shubham",
-                    Age = 30,
-                    Salary = 1232123
-                });
-                _context.Employees.Add(new Employee
-                {
-                    Name = "Omkar",
-                    Age = 32,
-                    Salary = 131232
-                });
-                _context.Employees.Add(new Employee
-                {
-                    Name = "Bhanu",
-                    Age = 45,
-                    Salary = 12313200
-                });
-                _context.SaveChanges();
-            }
+                Name = "Vighnesh",
+                Age = 21,
+                Salary = 10000000
+            });
+            _context.Employees.Add(new Employee
+            {
+                Name = "Shubham",
+                Age = 30,
+                Salary = 1232123
+            });
+            _context.Employees.Add(new Employee
+            {
+                Name = "Omkar",
+                Age = 32,
+                Salary = 131232
+            });
+            _context.Employees.Add(new Employee
+            {
+                Name = "Bhanu",
+                Age = 45,
+                Salary = 12313200
+            });
+            _context.SaveChanges();
         }
 
         [HttpGet]
