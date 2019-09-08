@@ -85,16 +85,19 @@ namespace WebApiAssignment.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateEmployee(int id, [FromBody] Employee employee)
         {
-            if (await _context.Employees.FindAsync(id) is null)
-                return BadRequest();
-
             if (id != employee.Id)
                 return BadRequest();
 
-            _context.Entry(employee).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            try
+            {
+                _context.Employees.Update(employee);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message);
+            }
         }
 
         [HttpDelete("{id}")]
